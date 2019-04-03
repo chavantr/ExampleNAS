@@ -7,7 +7,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.PopupMenu;
+import android.widget.Toast;
+import com.mywings.appschedulling.R;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 
@@ -65,5 +69,22 @@ public class AppsGridFragment extends GridFragment implements
         }
     }
 
+    @Override
+    public void onGridItemLongClick(GridView g, View v, int position, long id) {
+        super.onGridItemLongClick(g, v, position, id);
+        PopupMenu popup = new PopupMenu(getContext(), v);
+        popup.getMenuInflater().inflate(R.menu.config_menu, popup.getMenu());
+        Object menuHelper;
+        Class[] argTypes;
+        try {
+            Field fMenuHelper = PopupMenu.class.getDeclaredField("mPopup");
+            fMenuHelper.setAccessible(true);
+            menuHelper = fMenuHelper.get(popup);
+            argTypes = new Class[]{boolean.class};
+            menuHelper.getClass().getDeclaredMethod("setForceShowIcon", argTypes).invoke(menuHelper, true);
+        } catch (Exception e) {
 
+        }
+        popup.show();
+    }
 }
