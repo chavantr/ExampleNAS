@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">AppSchedulling</string>
+    <string name="all">All</string>
+    <string name="images">Images</string>
+    <string name="pdf_files">Pdf files</string>
+    <string name="other_data">Other data</string>
+    <string name="select_path">Select path</string>
+    <string name="choose_path">Choose path</string>
+    <string name="audio">Audio</string>
+    <string name="header">Header</string>
+    <string name="recent_used_apps">Recent used apps</string>
+    <string name="unused_apps">Unused apps</string>
 </resources>

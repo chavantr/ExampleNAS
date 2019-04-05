@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+import com.mywings.appschedulling.ConfigureActivity;
+import com.mywings.appschedulling.LastUnUsedAppActivity;
 import com.mywings.appschedulling.R;
+import com.mywings.appschedulling.stats.UserInfoHolder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -39,6 +43,8 @@ public class AppsGridFragment extends GridFragment implements
     public void onLoadFinished(Loader<ArrayList<AppModel>> loader,
                                ArrayList<AppModel> apps) {
         mAdapter.setData(apps);
+
+        UserInfoHolder.getInstance().setApps(apps);
 
         if (isResumed()) {
             setGridShown(true);
@@ -83,8 +89,24 @@ public class AppsGridFragment extends GridFragment implements
             argTypes = new Class[]{boolean.class};
             menuHelper.getClass().getDeclaredMethod("setForceShowIcon", argTypes).invoke(menuHelper, true);
         } catch (Exception e) {
-
         }
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_configure:
+                        Intent intent = new Intent(getContext(), LastUnUsedAppActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.action_push:
+                        return true;
+                    case R.id.action_pull:
+                        return true;
+                }
+                return true;
+            }
+        });
         popup.show();
     }
 }

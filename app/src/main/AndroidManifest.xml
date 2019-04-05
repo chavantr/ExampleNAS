@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.mywings.appschedulling">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission
+            android:name="android.permission.PACKAGE_USAGE_STATS"
+            tools:ignore="ProtectedPermissions"/>
 
     <application
             android:allowBackup="true"
@@ -8,11 +16,28 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-
-        <activity android:name=".GridActivity">
+            android:theme="@style/AppTheme">
+        <activity android:name=".UnUsedActivity">
+        </activity>
+        <activity
+                android:name=".LastUnUsedAppActivity"
+                android:label="Last unused apps"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".LastUnUsedActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".ConfigureActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".GridActivity"
+                android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
                 <category android:name="android.intent.category.HOME"/>
                 <category android:name="android.intent.category.DEFAULT"/>
