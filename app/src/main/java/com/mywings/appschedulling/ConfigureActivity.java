@@ -1,38 +1,26 @@
 package com.mywings.appschedulling;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.AppOpsManager;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
-import java.util.Calendar;
-import java.util.List;
-
-import static android.app.AppOpsManager.MODE_ALLOWED;
-import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
+import java.io.File;
 
 public class ConfigureActivity extends Activity {
 
+    private static final int REQUEST_CODE_PLACE = 10090;
     private Button btnFiles;
     private CheckBox chkAll;
     private CheckBox chkImages;
     private CheckBox chkPdf;
     private CheckBox chkOther;
     private CheckBox chkAudio;
+    private TextView lblPath;
     private static final int EXTERNAL_REQUEST = 1000;
 
 
@@ -46,6 +34,7 @@ public class ConfigureActivity extends Activity {
         chkPdf = findViewById(R.id.chkPdf);
         chkOther = findViewById(R.id.chkOther);
         chkAudio = findViewById(R.id.chkAudio);
+        lblPath = findViewById(R.id.lblPath);
 
         chkAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -63,7 +52,7 @@ public class ConfigureActivity extends Activity {
 
                 } else {
                     chkImages.setEnabled(true);
-                    chkImages.setEnabled(true);
+                    chkPdf.setEnabled(true);
                     chkOther.setEnabled(true);
                     chkAudio.setEnabled(true);
                 }
@@ -73,11 +62,17 @@ public class ConfigureActivity extends Activity {
         btnFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                // intent.setType("*/*");
+                // intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                // startActivityForResult(intent, REQUEST_CODE_PLACE);
 
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                startActivityForResult(Intent.createChooser(intent, "Choose directory for place 1"), REQUEST_CODE_PLACE);
             }
         });
 
-        if (ContextCompat.checkSelfPermission(this,
+       /* if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this,
@@ -89,7 +84,7 @@ public class ConfigureActivity extends Activity {
                     EXTERNAL_REQUEST);
 
 
-        }
+        }*/
 
         /*UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
 
@@ -102,7 +97,7 @@ public class ConfigureActivity extends Activity {
 
         Log.e("error", "stat" + stats.size());*/
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+        /*if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             UsageStatsManager mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
             long currentTime = System.currentTimeMillis();
             List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_WEEKLY, currentTime - 100 * 1000, currentTime);
@@ -115,7 +110,7 @@ public class ConfigureActivity extends Activity {
                     }
                 }
             }
-        }
+        }*/
 
 
     }
@@ -126,7 +121,7 @@ public class ConfigureActivity extends Activity {
         return mode == MODE_ALLOWED;
     }*/
 
-    @Override
+    /*@Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case EXTERNAL_REQUEST:
@@ -136,6 +131,18 @@ public class ConfigureActivity extends Activity {
 
                 }
                 break;
+        }
+    }*/
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_PLACE) {
+                String filePath = data.getData().getPath();
+                File file = new File(filePath);
+                lblPath.setText(file.getAbsolutePath());
+            }
         }
     }
 }

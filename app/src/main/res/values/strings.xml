@@ -10,4 +10,6 @@
     <string name="header">Header</string>
     <string name="recent_used_apps">Recent used apps</string>
     <string name="unused_apps">Unused apps</string>
+    <string name="unused_apps_in_recent_days">Unused apps in recent days</string>
+    <string name="save_config_">Save configuration</string>
 </resources>

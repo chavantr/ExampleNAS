@@ -5,6 +5,29 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".UnUsedActivity">
+        tools:context=".LastUnUsedAppActivity">
+
+
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:text="@string/unused_apps_in_recent_days"
+              app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="16dp"
+              app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
+              android:textColor="@color/colorAccent"
+              app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"/>
+
+    <android.support.v7.widget.RecyclerView android:layout_width="match_parent"
+                                            android:id="@+id/lstUnused"
+                                            android:layout_height="match_parent"
+                                            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="55dp"
+                                            app:layout_constraintStart_toStartOf="parent"
+                                            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
+                                            android:layout_marginEnd="8dp"
+                                            app:layout_constraintBottom_toBottomOf="parent"
+                                            android:layout_marginBottom="8dp"
+                                            app:layout_constraintHorizontal_bias="0.6">
+
+
+    </android.support.v7.widget.RecyclerView>
+
 
 </android.support.constraint.ConstraintLayout>

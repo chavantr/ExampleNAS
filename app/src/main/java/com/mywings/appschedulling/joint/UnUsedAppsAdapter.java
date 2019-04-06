@@ -1,12 +1,15 @@
 package com.mywings.appschedulling.joint;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.mywings.appschedulling.ConfigureActivity;
 import com.mywings.appschedulling.R;
 import com.mywings.appschedulling.lanucher.AppModel;
 
@@ -18,9 +21,11 @@ import java.util.Locale;
 public class UnUsedAppsAdapter extends RecyclerView.Adapter<UnUsedAppsAdapter.UnUsedAppsViewHolder> {
 
     private List<AppModel> lstApps;
+    private boolean flag;
 
-    public UnUsedAppsAdapter(List<AppModel> apps) {
+    public UnUsedAppsAdapter(List<AppModel> apps, boolean flag) {
         this.lstApps = apps;
+        this.flag = flag;
     }
 
     @Override
@@ -30,6 +35,16 @@ public class UnUsedAppsAdapter extends RecyclerView.Adapter<UnUsedAppsAdapter.Un
 
     @Override
     public void onBindViewHolder(@NonNull UnUsedAppsViewHolder unUsedAppsViewHolder, int position) {
+
+        unUsedAppsViewHolder.rlContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (flag) {
+                    Intent intent = new Intent(view.getContext(), ConfigureActivity.class);
+                    view.getContext().startActivity(intent);
+                }
+            }
+        });
         unUsedAppsViewHolder.lblName.setText(lstApps.get(position).getLabel());
         unUsedAppsViewHolder.lblLastTime.setText("Last used : " + convertMilliSecondsToDate(lstApps.get(position).getLastTime(), "MM-dd-yy hh-mm-ss"));
         unUsedAppsViewHolder.imgIcon.setImageDrawable(lstApps.get(position).getIcon());
@@ -48,14 +63,17 @@ public class UnUsedAppsAdapter extends RecyclerView.Adapter<UnUsedAppsAdapter.Un
 
     class UnUsedAppsViewHolder extends RecyclerView.ViewHolder {
 
+
         TextView lblName;
         TextView lblLastTime;
+        RelativeLayout rlContainer;
         ImageView imgIcon;
 
         public UnUsedAppsViewHolder(@NonNull View itemView) {
             super(itemView);
             lblName = itemView.findViewById(R.id.lblName);
             lblLastTime = itemView.findViewById(R.id.lblLastUnUsedTime);
+            rlContainer = itemView.findViewById(R.id.rlContainer);
             imgIcon = itemView.findViewById(R.id.imgIcon);
         }
     }
