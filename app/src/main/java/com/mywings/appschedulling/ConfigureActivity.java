@@ -72,67 +72,9 @@ public class ConfigureActivity extends Activity {
             }
         });
 
-       /* if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    EXTERNAL_REQUEST);
-
-
-        }*/
-
-        /*UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MONTH, -1);
-        long start = calendar.getTimeInMillis();
-        long end = System.currentTimeMillis();
-
-        List<UsageStats> stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, start, end);
-
-        Log.e("error", "stat" + stats.size());*/
-
-        /*if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            UsageStatsManager mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
-            long currentTime = System.currentTimeMillis();
-            List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_WEEKLY, currentTime - 100 * 1000, currentTime);
-            if (stats != null) {
-                long lastUsedAppTime = 0;
-                for (UsageStats usageStats : stats) {
-                    if (usageStats.getLastTimeUsed() > lastUsedAppTime) {
-                        String foregroundApp = usageStats.getPackageName();
-                        lastUsedAppTime = usageStats.getLastTimeUsed();
-                    }
-                }
-            }
-        }*/
-
 
     }
 
-   /* private boolean checkForPermission(Context context) {
-        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow(OPSTR_GET_USAGE_STATS, Process.myUid(), context.getPackageName());
-        return mode == MODE_ALLOWED;
-    }*/
-
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case EXTERNAL_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-
-                }
-                break;
-        }
-    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
