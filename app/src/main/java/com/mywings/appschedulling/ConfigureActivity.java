@@ -8,10 +8,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import com.mywings.appschedulling.locally.AppSchedulingDatabaseHelper;
+import com.mywings.appschedulling.locally.DbHelper;
+import com.mywings.appschedulling.process.OnRegisterDeviceListener;
+import com.mywings.appschedulling.process.RegisterDeviceAsync;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
-public class ConfigureActivity extends Activity {
+public class ConfigureActivity extends Activity implements OnRegisterDeviceListener {
 
     private static final int REQUEST_CODE_PLACE = 10090;
     private Button btnFiles;
@@ -22,6 +29,7 @@ public class ConfigureActivity extends Activity {
     private CheckBox chkAudio;
     private TextView lblPath;
     private static final int EXTERNAL_REQUEST = 1000;
+    private AppSchedulingDatabaseHelper appSchedulingDatabaseHelper;
 
 
     @Override
@@ -62,15 +70,12 @@ public class ConfigureActivity extends Activity {
         btnFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                // intent.setType("*/*");
-                // intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                // startActivityForResult(intent, REQUEST_CODE_PLACE);
-
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 startActivityForResult(Intent.createChooser(intent, "Choose directory for place 1"), REQUEST_CODE_PLACE);
             }
         });
+
+        appSchedulingDatabaseHelper = new AppSchedulingDatabaseHelper(ConfigureActivity.this, DbHelper.DB_NAME, null, DbHelper.DB_VERSION);
 
 
     }
@@ -86,5 +91,20 @@ public class ConfigureActivity extends Activity {
                 lblPath.setText(file.getAbsolutePath());
             }
         }
+    }
+
+    private void init() throws JSONException {
+        RegisterDeviceAsync registerDeviceAsync = new RegisterDeviceAsync();
+        JSONObject jRequest = new JSONObject();
+        JSONObject param = new JSONObject();
+        param.put("IMEINumber", "");
+        param.put("DeviceSecureId", "");
+        jRequest.put("request", param);
+        registerDeviceAsync.setOnRegisterDeviceListener(this, jRequest);
+    }
+
+    @Override
+    public void onDeviceRegisteredSuccess(@Nullable String result) {
+
     }
 }
