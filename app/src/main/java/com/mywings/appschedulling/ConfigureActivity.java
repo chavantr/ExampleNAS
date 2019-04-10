@@ -1,17 +1,26 @@
 package com.mywings.appschedulling;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import com.mywings.appschedulling.lanucher.AppModel;
 import com.mywings.appschedulling.locally.AppSchedulingDatabaseHelper;
 import com.mywings.appschedulling.locally.DbHelper;
 import com.mywings.appschedulling.process.OnRegisterDeviceListener;
 import com.mywings.appschedulling.process.RegisterDeviceAsync;
+import com.mywings.appschedulling.stats.UserInfoHolder;
+import com.mywings.appschedulling.stats.model.AppMetadata;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +39,8 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
     private TextView lblPath;
     private static final int EXTERNAL_REQUEST = 1000;
     private AppSchedulingDatabaseHelper appSchedulingDatabaseHelper;
+    private String strDeviceName = "";
+    private String strImeiNumber = "";
 
 
     @Override
@@ -75,8 +86,31 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
             }
         });
 
+        strDeviceName = android.os.Build.MODEL;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            strImeiNumber = telephonyManager.getImei();
+        } else {
+            strImeiNumber = telephonyManager.getDeviceId();
+        }
+
+
         appSchedulingDatabaseHelper = new AppSchedulingDatabaseHelper(ConfigureActivity.this, DbHelper.DB_NAME, null, DbHelper.DB_VERSION);
 
+        if (!strImeiNumber.isEmpty() && !strDeviceName.isEmpty()) {
+            try {
+                init();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -86,9 +120,12 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_PLACE) {
+                AppModel appModel = UserInfoHolder.getInstance().getAppModel();
                 String filePath = data.getData().getPath();
                 File file = new File(filePath);
                 lblPath.setText(file.getAbsolutePath());
+                AppMetadata appMetadata = new AppMetadata();
+                appMetadata.setName(appModel.getAppInfo().name);
             }
         }
     }
@@ -97,8 +134,9 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         RegisterDeviceAsync registerDeviceAsync = new RegisterDeviceAsync();
         JSONObject jRequest = new JSONObject();
         JSONObject param = new JSONObject();
-        param.put("IMEINumber", "");
+        param.put("IMEINumber", strImeiNumber);
         param.put("DeviceSecureId", "");
+        param.put("DeviceName", strDeviceName);
         jRequest.put("request", param);
         registerDeviceAsync.setOnRegisterDeviceListener(this, jRequest);
     }

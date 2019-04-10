@@ -10,6 +10,7 @@ public class UserInfoHolder {
 
     private ArrayList<AppModel> apps;
     private List<AppModel> unapps;
+    private AppModel appModel;
 
     public static UserInfoHolder getInstance() {
         return UserInfoHolderHelper.INSTANCE;
@@ -29,6 +30,14 @@ public class UserInfoHolder {
 
     public void setUnapps(List<AppModel> unapps) {
         this.unapps = unapps;
+    }
+
+    public AppModel getAppModel() {
+        return appModel;
+    }
+
+    public void setAppModel(AppModel appModel) {
+        this.appModel = appModel;
     }
 
     private static class UserInfoHolderHelper {

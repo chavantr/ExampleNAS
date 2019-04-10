@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.mywings.appschedulling.ConfigureActivity;
 import com.mywings.appschedulling.R;
 import com.mywings.appschedulling.lanucher.AppModel;
+import com.mywings.appschedulling.stats.UserInfoHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,12 +35,13 @@ public class UnUsedAppsAdapter extends RecyclerView.Adapter<UnUsedAppsAdapter.Un
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UnUsedAppsViewHolder unUsedAppsViewHolder, int position) {
+    public void onBindViewHolder(@NonNull UnUsedAppsViewHolder unUsedAppsViewHolder, final int position) {
 
         unUsedAppsViewHolder.rlContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (flag) {
+                    UserInfoHolder.getInstance().setAppModel(lstApps.get(position));
                     Intent intent = new Intent(view.getContext(), ConfigureActivity.class);
                     view.getContext().startActivity(intent);
                 }
@@ -62,7 +64,6 @@ public class UnUsedAppsAdapter extends RecyclerView.Adapter<UnUsedAppsAdapter.Un
     }
 
     class UnUsedAppsViewHolder extends RecyclerView.ViewHolder {
-
 
         TextView lblName;
         TextView lblLastTime;
