@@ -13,5 +13,6 @@ data class AppMetadata(
     var show: Boolean = true,
     var synced: Boolean = false,
     var upload: Boolean = false,
-    var serverUrl: String = ""
+    var serverUrl: String = "",
+    var imageIcon: String = ""
 )

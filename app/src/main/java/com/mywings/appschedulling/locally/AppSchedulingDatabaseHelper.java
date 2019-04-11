@@ -11,7 +11,7 @@ public class AppSchedulingDatabaseHelper extends SQLiteOpenHelper {
 
     //id,name,icon,packagename,localdirectory,numoffiles,size,show,synced,upload
 
-    private final String CREATE_APP_METADATA = "CREATE TABLE IF NOT EXISTS APP_METADATA(id INTEGER PRIMARY KEY AUTOINCREMENT,name text,packagename text,localdirectory text,numoffiles INTEGER,size INTEGER,show text,synced text,upload text,serverurl text)";
+    private final String CREATE_APP_METADATA = "CREATE TABLE IF NOT EXISTS APP_METADATA(id INTEGER PRIMARY KEY AUTOINCREMENT,name text,packagename text,localdirectory text,numoffiles INTEGER,size INTEGER,show text,synced text,upload text,serverurl text,imageicon text)";
 
     //private final String CREATE_APP_MASTER = "CREATE TABLE IF NOT EXISTS APP_MASTER(";
 

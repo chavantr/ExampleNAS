@@ -5,10 +5,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -25,12 +29,14 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 public class ConfigureActivity extends Activity implements OnRegisterDeviceListener {
 
     private static final int REQUEST_CODE_PLACE = 10090;
     private Button btnFiles;
+    private Button btnConfig;
     private CheckBox chkAll;
     private CheckBox chkImages;
     private CheckBox chkPdf;
@@ -48,6 +54,7 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configure);
         btnFiles = findViewById(R.id.btnFiles);
+        btnConfig = findViewById(R.id.btnConfig);
         chkAll = findViewById(R.id.chkAll);
         chkImages = findViewById(R.id.chkImages);
         chkPdf = findViewById(R.id.chkPdf);
@@ -112,6 +119,13 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
             }
         }
 
+        btnConfig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
     }
 
 
@@ -125,9 +139,35 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
                 File file = new File(filePath);
                 lblPath.setText(file.getAbsolutePath());
                 AppMetadata appMetadata = new AppMetadata();
-                appMetadata.setName(appModel.getAppInfo().name);
+                appMetadata.setName(appModel.getLabel());
+                appMetadata.setPackageName(appModel.getAppInfo().packageName);
+                appMetadata.setDrawable(appModel.getIcon());
+                appMetadata.setLocalDirectory(file.getAbsolutePath());
+                appMetadata.setServerUrl("");
+                appMetadata.setShow(true);
+                appMetadata.setUpload(true);
+                appMetadata.setImageIcon(convertBitmapToString(getBitmap(appMetadata.getDrawable())));
             }
         }
+    }
+
+    private String convertBitmapToString(Bitmap bitmap) {
+        if (null != bitmap) {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
+        }
+        return "";
+    }
+
+    private Bitmap getBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (null != bitmapDrawable.getBitmap()) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+        return null;
     }
 
     private void init() throws JSONException {
@@ -144,5 +184,7 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
     @Override
     public void onDeviceRegisteredSuccess(@Nullable String result) {
 
+
     }
+
 }
