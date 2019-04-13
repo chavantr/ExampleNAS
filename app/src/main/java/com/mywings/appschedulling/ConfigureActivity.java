@@ -2,27 +2,27 @@ package com.mywings.appschedulling;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.provider.DocumentFile;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.TextView;
+import android.widget.*;
 import com.mywings.appschedulling.lanucher.AppModel;
 import com.mywings.appschedulling.locally.AppSchedulingDatabaseHelper;
 import com.mywings.appschedulling.locally.DbHelper;
-import com.mywings.appschedulling.process.OnRegisterDeviceListener;
-import com.mywings.appschedulling.process.RegisterDeviceAsync;
+import com.mywings.appschedulling.process.*;
 import com.mywings.appschedulling.stats.UserInfoHolder;
 import com.mywings.appschedulling.stats.model.AppMetadata;
 import org.jetbrains.annotations.Nullable;
@@ -31,8 +31,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
-public class ConfigureActivity extends Activity implements OnRegisterDeviceListener {
+public class ConfigureActivity extends Activity implements OnRegisterDeviceListener, OnAppMetadataListener {
 
     private static final int REQUEST_CODE_PLACE = 10090;
     private Button btnFiles;
@@ -47,6 +48,8 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
     private AppSchedulingDatabaseHelper appSchedulingDatabaseHelper;
     private String strDeviceName = "";
     private String strImeiNumber = "";
+    private AppMetadata appMetadata;
+    private ProgressDialogUtil progressDialogUtil;
 
 
     @Override
@@ -61,6 +64,7 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         chkOther = findViewById(R.id.chkOther);
         chkAudio = findViewById(R.id.chkAudio);
         lblPath = findViewById(R.id.lblPath);
+        progressDialogUtil = new ProgressDialogUtil(this);
 
         chkAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -122,12 +126,14 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         btnConfig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                try {
+                    initConfiguration(appMetadata);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
-
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -135,17 +141,43 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_PLACE) {
                 AppModel appModel = UserInfoHolder.getInstance().getAppModel();
-                String filePath = data.getData().getPath();
-                File file = new File(filePath);
-                lblPath.setText(file.getAbsolutePath());
-                AppMetadata appMetadata = new AppMetadata();
+                //String filePath = data.getData().getPath();
+                Uri uri = data.getData();
+                DocumentFile fileProvider = DocumentFile.fromTreeUri(this, uri);
+                int numOfFiles = 0;
+                int sizesOfFile = 0;
+                fileProvider.getUri();
+                if (fileProvider.isDirectory()) {
+                    for (DocumentFile file : fileProvider.listFiles()) {
+                        if (file.isDirectory()) {
+                            for (DocumentFile iFile : file.listFiles()) {
+                                if (iFile.isDirectory()) {
+                                    numOfFiles = numOfFiles + 1;
+                                    sizesOfFile = (int) (sizesOfFile + iFile.length());
+                                } else
+                                    numOfFiles = numOfFiles + 1;
+                                sizesOfFile = (int) (sizesOfFile + iFile.length());
+                            }
+                        } else {
+                            numOfFiles = numOfFiles + 1;
+                            sizesOfFile = (int) (sizesOfFile + file.length());
+                        }
+                    }
+                } else {
+                    numOfFiles = 1;
+                    sizesOfFile = (int) (sizesOfFile + fileProvider.length());
+                }
+                appMetadata = new AppMetadata();
                 appMetadata.setName(appModel.getLabel());
                 appMetadata.setPackageName(appModel.getAppInfo().packageName);
                 appMetadata.setDrawable(appModel.getIcon());
-                appMetadata.setLocalDirectory(file.getAbsolutePath());
                 appMetadata.setServerUrl("");
                 appMetadata.setShow(true);
+                appMetadata.setLocalDirectory(fileProvider.getUri().getPath());
                 appMetadata.setUpload(true);
+                appMetadata.setSize(String.valueOf(sizesOfFile));
+                appMetadata.setNumOfFiles(String.valueOf(numOfFiles));
+                appMetadata.setImei(strImeiNumber);
                 appMetadata.setImageIcon(convertBitmapToString(getBitmap(appMetadata.getDrawable())));
             }
         }
@@ -181,10 +213,92 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         registerDeviceAsync.setOnRegisterDeviceListener(this, jRequest);
     }
 
+    private void initConfiguration(AppMetadata appMetadata) throws JSONException {
+        progressDialogUtil.show();
+        JSONObject jRequest = new JSONObject();
+        JSONObject param = new JSONObject();
+        param.put("Name", appMetadata.getName());
+        param.put("PackageName", appMetadata.getPackageName());
+        param.put("LocalDirector", appMetadata.getLocalDirectory());
+        param.put("NumOfFiles", appMetadata.getNumOfFiles());
+        param.put("Size", appMetadata.getSize());
+        param.put("Show", appMetadata.getShow());
+        param.put("Synced", appMetadata.getSynced());
+        param.put("Upload", appMetadata.getUpload());
+        param.put("ServerUrl", appMetadata.getServerUrl());
+        param.put("ImageIcon", appMetadata.getImageIcon());
+        param.put("Imei", appMetadata.getImei());
+        jRequest.put("request", param);
+        UploadMetadataAsync uploadMetadataAsync = new UploadMetadataAsync();
+        uploadMetadataAsync.setOnMetadataListener(this, jRequest);
+    }
+
     @Override
     public void onDeviceRegisteredSuccess(@Nullable String result) {
 
-
     }
 
+    private void notifyUser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Sync data")
+                .setMessage("You have requested back up data an application to cloud, It will start shortly")
+                .setCancelable(true)
+                .setPositiveButton("Agree", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    @Override
+    public void onAppMetadataSuccess(@Nullable String result) {
+        progressDialogUtil.hide();
+        if (null != result && result.equalsIgnoreCase("1")) {
+            notifyUser();
+        } else {
+            Toast.makeText(this, "Something went wrong in configuration setting or application already registered.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public long fileSize(File root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.isFile()) {
+            return root.length();
+        }
+        try {
+            if (isSymlink(root)) {
+                return 0;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        long length = 0;
+        File[] files = root.listFiles();
+        if (files == null) {
+            return 0;
+        }
+        for (File file : files) {
+            length += fileSize(file);
+        }
+
+        return length;
+    }
+
+    private boolean isSymlink(File file) throws IOException {
+        File canon;
+        if (file.getParent() == null) {
+            canon = file;
+        } else {
+            File canonDir = file.getParentFile().getCanonicalFile();
+            canon = new File(canonDir, file.getName());
+        }
+        return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
+    }
 }

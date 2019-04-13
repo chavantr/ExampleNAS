@@ -23,7 +23,7 @@
 
         <TextView android:layout_width="match_parent" android:layout_below="@id/lblName"
                   android:layout_toRightOf="@id/imgIcon" android:layout_marginStart="5dp"
-                  android:layout_height="wrap_content" android:text="last time"
+                  android:layout_height="wrap_content" android:text="last time" android:visibility="gone"
                   android:id="@+id/lblLastUnUsedTime" android:gravity="center_vertical" android:padding="7dp"/>
 
     </RelativeLayout>

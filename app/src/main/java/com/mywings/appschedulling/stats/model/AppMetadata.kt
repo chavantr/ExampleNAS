@@ -14,5 +14,6 @@ data class AppMetadata(
     var synced: Boolean = false,
     var upload: Boolean = false,
     var serverUrl: String = "",
-    var imageIcon: String = ""
+    var imageIcon: String = "",
+    var imei: String = ""
 )

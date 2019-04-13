@@ -9,20 +9,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.PopupMenu;
-import android.widget.Toast;
-import com.mywings.appschedulling.ConfigureActivity;
 import com.mywings.appschedulling.LastUnUsedAppActivity;
 import com.mywings.appschedulling.R;
+import com.mywings.appschedulling.locally.DbHelper;
+import com.mywings.appschedulling.proces.OnConnectionListener;
+import com.mywings.appschedulling.process.UtilityConnection;
 import com.mywings.appschedulling.stats.UserInfoHolder;
+
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 
-public class AppsGridFragment extends GridFragment implements
+public class AppsGridFragment extends GridFragment implements OnConnectionListener,
         LoaderManager.LoaderCallbacks<ArrayList<AppModel>> {
 
     AppListAdapter mAdapter;
+    private Boolean checkInstance = false;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -31,6 +34,8 @@ public class AppsGridFragment extends GridFragment implements
         mAdapter = new AppListAdapter(getActivity());
         setGridAdapter(mAdapter);
         setGridShown(false);
+        UtilityConnection utilityConnection = new UtilityConnection();
+        utilityConnection.setOnConnectionListener(this, DbHelper.EXIST);
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -60,9 +65,8 @@ public class AppsGridFragment extends GridFragment implements
 
     @Override
     public void onGridItemClick(GridView g, View v, int position, long id) {
-
         final AppModel app = (AppModel) getGridAdapter().getItem(position);
-
+        if (evaluate()) return;
         if (app != null) {
             Intent intent = getActivity().getPackageManager()
                     .getLaunchIntentForPackage(
@@ -78,6 +82,7 @@ public class AppsGridFragment extends GridFragment implements
     @Override
     public void onGridItemLongClick(GridView g, View v, int position, long id) {
         super.onGridItemLongClick(g, v, position, id);
+        if (evaluate()) return;
         PopupMenu popup = new PopupMenu(getContext(), v);
         popup.getMenuInflater().inflate(R.menu.config_menu, popup.getMenu());
         Object menuHelper;
@@ -108,5 +113,15 @@ public class AppsGridFragment extends GridFragment implements
             }
         });
         popup.show();
+    }
+
+    private boolean evaluate() {
+        if (!checkInstance) return true;
+        return false;
+    }
+
+    @Override
+    public void onConnectionSuccess(boolean result) {
+        checkInstance = result;
     }
 }
