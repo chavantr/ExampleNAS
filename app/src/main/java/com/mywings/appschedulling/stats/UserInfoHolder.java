@@ -12,6 +12,8 @@ public class UserInfoHolder {
     private List<AppModel> unapps;
     private AppModel appModel;
 
+    private ArrayList batch;
+
     public static UserInfoHolder getInstance() {
         return UserInfoHolderHelper.INSTANCE;
     }
@@ -38,6 +40,14 @@ public class UserInfoHolder {
 
     public void setAppModel(AppModel appModel) {
         this.appModel = appModel;
+    }
+
+    public ArrayList getBatch() {
+        return batch;
+    }
+
+    public void setBatch(ArrayList batch) {
+        this.batch = batch;
     }
 
     private static class UserInfoHolderHelper {

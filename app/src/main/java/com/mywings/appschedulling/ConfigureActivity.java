@@ -49,6 +49,7 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
     private String strDeviceName = "";
     private String strImeiNumber = "";
     private AppMetadata appMetadata;
+    private FileSyncAdapter fileSyncAdapter;
     private ProgressDialogUtil progressDialogUtil;
 
 
@@ -127,7 +128,11 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
             @Override
             public void onClick(View view) {
                 try {
-                    initConfiguration(appMetadata);
+                    if (null != appMetadata) {
+                        initConfiguration(appMetadata);
+                    } else {
+                        Toast.makeText(ConfigureActivity.this, "Select path", Toast.LENGTH_LONG).show();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
