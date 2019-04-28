@@ -103,7 +103,6 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-
             return;
         }
 
@@ -112,7 +111,6 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         } else {
             strImeiNumber = telephonyManager.getDeviceId();
         }
-
 
         appSchedulingDatabaseHelper = new AppSchedulingDatabaseHelper(ConfigureActivity.this, DbHelper.DB_NAME, null, DbHelper.DB_VERSION);
 
@@ -129,7 +127,11 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
             public void onClick(View view) {
                 try {
                     if (null != appMetadata) {
-                        initConfiguration(appMetadata);
+                        long i = appSchedulingDatabaseHelper.saveInformationOfApp(appMetadata);
+                        if (i > 0)
+                            initConfiguration(appMetadata);
+                        else
+                            Toast.makeText(ConfigureActivity.this, "Problem in scheduling batch", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(ConfigureActivity.this, "Select path", Toast.LENGTH_LONG).show();
                     }
@@ -146,12 +148,10 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_PLACE) {
                 AppModel appModel = UserInfoHolder.getInstance().getAppModel();
-                //String filePath = data.getData().getPath();
                 Uri uri = data.getData();
                 DocumentFile fileProvider = DocumentFile.fromTreeUri(this, uri);
                 int numOfFiles = 0;
                 int sizesOfFile = 0;
-                fileProvider.getUri();
                 if (fileProvider.isDirectory()) {
                     for (DocumentFile file : fileProvider.listFiles()) {
                         if (file.isDirectory()) {
@@ -240,7 +240,6 @@ public class ConfigureActivity extends Activity implements OnRegisterDeviceListe
 
     @Override
     public void onDeviceRegisteredSuccess(@Nullable String result) {
-
     }
 
     private void notifyUser() {

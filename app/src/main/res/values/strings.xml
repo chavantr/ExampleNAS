@@ -12,4 +12,5 @@
     <string name="unused_apps">Unused apps</string>
     <string name="unused_apps_in_recent_days">Unused apps in recent days</string>
     <string name="save_config_">Save configuration</string>
+    <string name="label_upload">Configuration of cloning in progress, wait until complete</string>
 </resources>

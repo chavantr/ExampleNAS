@@ -21,5 +21,22 @@
               android:icon="@drawable/ic_sync_black_24dp"
               app:showAsAction="never"/>
     </group>
+    <group android:id="@+id/grp4">
+        <item android:id="@+id/action_install"
+              android:title="Install"
+              android:orderInCategory="100"
+
+              android:icon="@drawable/ic_adb_black_24dp"
+              app:showAsAction="never"/>
+    </group>
+
+    <group android:id="@+id/grp5">
+        <item android:id="@+id/action_uninstall"
+              android:title="Backup and Uninstall"
+              android:orderInCategory="100"
+
+              android:icon="@drawable/ic_delete_black_24dp"
+              app:showAsAction="never"/>
+    </group>
 
 </menu>
